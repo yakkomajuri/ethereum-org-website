@@ -6,6 +6,8 @@ import Icon from "./Icon"
 import Emoji from "./Emoji"
 import Translation from "./Translation"
 
+import { trackCustomEvent } from "../utils/matomo"
+
 const H3 = styled.h3`
   font-weight: 700;
   line-height: 100%;
@@ -119,6 +121,23 @@ const TranslationBanner = ({
     ? "translation-banner-body-update"
     : "translation-banner-body-new"
 
+  const closeBanner = () => {
+    trackCustomEvent({
+      eventCategory: `Translation banner`,
+      eventAction: `Clicked`,
+      eventName: `Close`,
+    })
+    setIsOpen(false)
+  }
+
+  const handleButtonClick = (eventName) => {
+    trackCustomEvent({
+      eventCategory: `Translation banner`,
+      eventAction: `Clicked`,
+      eventName,
+    })
+  }
+
   return (
     <BannerContainer isOpen={isOpen}>
       <StyledBanner>
@@ -137,13 +156,13 @@ const TranslationBanner = ({
             <Translation id={bodyTextId} />
           </p>
           <ButtonRow>
-            <div>
+            <div onClick={() => handleButtonClick("Translate page")}>
               <ButtonLink to="/en/contributing/translation-program/">
                 <Translation id="translation-banner-button-translate-page" />
               </ButtonLink>
             </div>
             {isPageOutdated && (
-              <div>
+              <div onClick={() => handleButtonClick("See english")}>
                 <SecondaryButtonLink isSecondary to={`/en${originalPagePath}`}>
                   <Translation id="translation-banner-button-see-english" />
                 </SecondaryButtonLink>
@@ -152,7 +171,7 @@ const TranslationBanner = ({
           </ButtonRow>
         </BannerContent>
         <BannerClose
-          onClick={() => setIsOpen(false)}
+          onClick={() => closeBanner()}
           isPageRightToLeft={isPageRightToLeft}
         >
           <BannerCloseIcon name="close" />
